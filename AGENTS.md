@@ -1,0 +1,37 @@
+# Pitaya Convert – konwerter wideo, audio i obrazów
+
+> Plik przekazania projektu między narzędziami AI (Claude Code ⇄ Antigravity ⇄ inne).
+> Przeczytaj go w całości, zanim cokolwiek zmienisz. **Nie ma tu żadnych sekretów** – hasła i klucze są poza repozytorium i nie wolno ich kopiować do kodu, logów ani rozmów.
+> Stan na: 2026-10-29. Jeśli zmieniasz architekturę albo sposób wdrażania, zaktualizuj ten plik.
+
+## 1. Czym to jest
+**Pitaya Convert** konwertuje wideo, audio i grafikę (także HEIC/AVIF). Używa ffmpeg dołączonego do aplikacji (w paczce poza `app.asar`) lub systemowego, wybiera najlepszy działający koder i raportuje postęp. Wersja na telefon (moduł Convert w aplikacji Pitayas) działa niezależnie na urządzeniu.
+
+## 2. Zasady od właściciela
+- Silnik (`engine.js`) ma pozostać niezależny od Electrona, żeby dało się go testować automatycznie.
+- Nigdy nie nadpisuj istniejących plików użytkownika.
+
+## 3. Gdzie co leży i jak uruchamiać
+`npm install`, `npm start`, **`npm test`** (`test/run-tests.js`). Paczki: `npm run build:win|linux|all`. Wydania robi Pitayas Admin.
+
+## 4. Struktura
+```
+main.js       okno, tray, ustawienia (jakość, koder)
+engine.js     formaty, wykrywanie koderów, konwersje, postęp, przerywanie
+renderer.js, preload.js, index.html   okno
+test/         testy silnika
+```
+
+## 5. Testowanie
+`npm test` sprawdza silnik. Okno i kodery sprzętowe zależą od karty graficznej i sterowników.
+
+## 6. Zasady wspólne
+- **Język:** interfejs, komentarze, opisy zmian i odpowiedzi po polsku. Marka „Pitayas”; kolory: róż pitai `#ff4fa6`, ciemne tło `#121116`.
+- **Wygląd:** matowy, spokojny, czytelny — **nie „AI slop”**: bez świecących gradientów w tytułach, poświat pod przyciskami i udawanego szkła w CSS. Prawdziwe szkło tylko natywne (iOS 26) na elementach, które się nie ruszają.
+- **Pitaya Core:** folder `core/` w aplikacji to **kopia** z projektu `Pitayas-Core`. Nie edytuj jej w aplikacji — zmieniaj w `Pitayas-Core` i uruchom `~/Pitayas-Projects/ADMIN/sync-core.sh`. Każda aplikacja rejestruje się w `~/.config/Pitayas/apps/<id>.json` i wystawia kanał sterowania (kontrakt Core 0.2, dla przyszłego Pitaya Hub).
+- **Lista zmian:** po **każdej** zmianie w aplikacji dopisz wpis: `node ~/Pitayas-Projects/ADMIN/changelog.js add <id> <feature|fix|change> "opis po polsku"`. `<id>` = nazwa folderu bez „Pitayas-”, małymi literami (np. `screen`, `mobile`, `accounts`, `admin`, `website`). Wpisy trafiają do opisu wydania na GitHubie.
+- **Git:** commity jako właściciel (`Pitayas <inbox@rakunek.com>`), krótki opis po polsku, **bez** `Co-Authored-By` i wzmianek o narzędziach AI. Push tylko na bieżącą gałąź, bez force-push bez zgody.
+- **Budowanie i wydania:** nie buduj, nie pakuj i nie publikuj wersji bez wyraźnej prośby właściciela. Wydania robi **Pitayas Admin** (`ADMIN/cli.js`, GitHub Releases organizacji Pitayas-Team). Po budowie nie uruchamiaj aplikacji właściciela.
+- **Sekrety:** hasła, tokeny, klucze i pliki `.env` nigdy do kodu, logów, commitów ani rozmów.
+- **Uczciwość:** nie masz telefonu, iPhone'a ani Windowsa — wyraźnie napisz, czego nie dało się sprawdzić, zamiast twierdzić, że działa.
+- **Praca na serwerze:** projekty leżą w `~/Pitayas-Projects` na serwerze rakunek.com (kopia na komputerze właściciela to zapas). Nie startuj zbędnych procesów w tle ani dodatkowych sesji/agentów.
